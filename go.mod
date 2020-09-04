@@ -1,1 +1,3 @@
-module "ioc"
+module ioc
+
+go 1.13
