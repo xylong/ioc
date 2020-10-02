@@ -12,9 +12,14 @@ func (m Mapper) add(v interface{}) {
 	m[t] = reflect.ValueOf(v)
 }
 
-func (m Mapper) get(key interface{}) reflect.Value {
-	t := reflect.TypeOf(key)
-	if value, ok := m[t]; ok {
+func (m Mapper) get(any interface{}) reflect.Value {
+	var key reflect.Type
+	if t, ok := any.(reflect.Type); ok {
+		key = t
+	} else {
+		key = reflect.TypeOf(any)
+	}
+	if value, ok := m[key]; ok {
 		return value
 	}
 	return reflect.Value{}

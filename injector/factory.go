@@ -1,5 +1,9 @@
 package injector
 
+import (
+	"reflect"
+)
+
 var Factory *factory
 
 func init() {
@@ -34,4 +38,26 @@ func (f factory) Get(v interface{}) interface{} {
 		return value.Interface()
 	}
 	return nil
+}
+
+// Apply 处理依赖注入
+func (f factory) Apply(any interface{}) {
+	if any == nil {
+		return
+	}
+	v := reflect.ValueOf(any)
+	if v.Kind() == reflect.Ptr {
+		v = v.Elem()
+	}
+	if v.Kind() != reflect.Struct {
+		return
+	}
+	for i := 0; i < v.NumField(); i++ {
+		field := v.Type().Field(i)
+		if v.Field(i).CanSet() && field.Tag.Get("inject") != "" {
+			if value := f.Get(v.Type()); value != nil {
+				v.Field(i).Set(reflect.ValueOf(value))
+			}
+		}
+	}
 }
