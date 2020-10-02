@@ -52,10 +52,12 @@ func (f factory) Apply(any interface{}) {
 	if v.Kind() != reflect.Struct {
 		return
 	}
+	// 在容器里匹配
 	for i := 0; i < v.NumField(); i++ {
 		field := v.Type().Field(i)
+		// 判断是否可以赋值
 		if v.Field(i).CanSet() && field.Tag.Get("inject") != "" {
-			if value := f.Get(v.Type()); value != nil {
+			if value := f.Get(field.Type); value != nil {
 				v.Field(i).Set(reflect.ValueOf(value))
 			}
 		}

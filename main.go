@@ -7,11 +7,11 @@ import (
 )
 
 func main() {
-	injector.Factory.Set(service.NewOrderService())
+	orderService := service.NewOrderService()
+	injector.Factory.Set(orderService)
 
 	userService := service.NewUserService()
 	injector.Factory.Apply(userService)
 
 	fmt.Println(userService.Order)
-	fmt.Println(injector.Factory)
 }
