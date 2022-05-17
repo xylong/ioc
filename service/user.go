@@ -6,11 +6,11 @@ import (
 )
 
 type UserService struct {
-	os *OrderService
+	Order *OrderService `inject`
 }
 
-func NewUserService(service *OrderService) *UserService {
-	return &UserService{os: service}
+func NewUserService() *UserService {
+	return &UserService{}
 }
 
 func (s *UserService) GetUserInfo(uid int) {
@@ -18,5 +18,5 @@ func (s *UserService) GetUserInfo(uid int) {
 }
 
 func (s *UserService) GetOrderInfo(uid int) {
-	s.os.GetOrderInfo(uid)
+	s.Order.GetOrderInfo(uid)
 }

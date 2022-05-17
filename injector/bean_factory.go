@@ -1,5 +1,9 @@
 package injector
 
+import (
+	"reflect"
+)
+
 var (
 	BeanFactory *BeanFactoryImpl
 )
@@ -16,25 +20,51 @@ func NewBeanFactory() *BeanFactoryImpl {
 	return &BeanFactoryImpl{beanMapper: make(BeanMapper)}
 }
 
-func (i BeanFactoryImpl) Set(v ...interface{}) {
+func (b BeanFactoryImpl) Set(v ...interface{}) {
 	if v == nil || len(v) == 0 {
 		return
 	}
 
 	for _, item := range v {
-		i.beanMapper.add(item)
+		b.beanMapper.add(item)
 	}
 }
 
-func (i BeanFactoryImpl) Get(v interface{}) interface{} {
+func (b BeanFactoryImpl) Get(v interface{}) interface{} {
 	if v == nil {
 		return nil
 	}
 
-	_v := i.beanMapper.get(v)
+	_v := b.beanMapper.get(v)
 	if _v.IsValid() {
 		return _v.Interface()
 	}
 
 	return nil
+}
+
+// Apply 注入
+func (b BeanFactoryImpl) Apply(bean interface{})  {
+	if bean==nil {
+		return
+	}
+
+	v:=reflect.ValueOf(bean)
+
+	if v.Kind()==reflect.Ptr {
+		v=v.Elem()
+	}
+
+	if v.Kind()!=reflect.Struct {
+		return
+	}
+
+	for i := 0; i < v.NumField(); i++ {
+		f:=v.Field(i)
+		if f.CanSet() && v.Type().Field(i).Tag =="inject" {
+			if val:=b.Get(f.Type());val!=nil {
+				f.Set(reflect.ValueOf(val))
+			}
+		}
+	}
 }
