@@ -4,18 +4,23 @@ import "reflect"
 
 type mapper map[reflect.Type]reflect.Value
 
-func (m mapper) set(any interface{}) {
-	t := reflect.TypeOf(any)
-
+func (m mapper) set(obj interface{}) {
+	t := reflect.TypeOf(obj)
 	if t.Kind() != reflect.Ptr {
 		panic("required ptr")
 	}
 
-	m[t] = reflect.ValueOf(any)
+	m[t] = reflect.ValueOf(obj)
 }
 
-func (m mapper) get(any interface{}) reflect.Value {
-	t := reflect.TypeOf(any)
+func (m mapper) get(key interface{}) reflect.Value {
+	var t reflect.Type
+
+	if v, ok := key.(reflect.Type); ok {
+		t = v
+	} else {
+		t = reflect.TypeOf(key)
+	}
 
 	if v, ok := m[t]; ok {
 		return v

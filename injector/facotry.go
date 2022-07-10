@@ -1,6 +1,11 @@
 package injector
 
-import "reflect"
+import (
+	"reflect"
+)
+
+// injectTag 注入标签
+const injectTag = "inject"
 
 func init() {
 	Factory = NewMapperFactory()
@@ -37,4 +42,29 @@ func (f *MapperFactory) Get(key interface{}) interface{} {
 	}
 
 	return nil
+}
+
+// Apply 处理依赖注入
+func (f *MapperFactory) Apply(obj interface{}) {
+	if obj == nil {
+		return
+	}
+
+	v := reflect.ValueOf(obj)
+	if v.Kind() == reflect.Ptr {
+		v = v.Elem()
+	}
+
+	if v.Kind() != reflect.Struct {
+		return
+	}
+
+	for i := 0; i < v.NumField(); i++ {
+		field := v.Type().Field(i)
+		if v.Field(i).CanSet() && (field.Tag == injectTag || field.Tag.Get(injectTag) == "" || field.Tag.Get(injectTag) == "-") {
+			if val := f.Get(field.Type); val != nil {
+				v.Field(i).Set(reflect.ValueOf(val))
+			}
+		}
+	}
 }

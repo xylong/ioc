@@ -3,11 +3,11 @@ package service
 import "fmt"
 
 type UserService struct {
-	order *OrderService
+	Order *OrderService `inject:""`
 }
 
-func NewUserService(order *OrderService) *UserService {
-	return &UserService{order: order}
+func NewUserService() *UserService {
+	return &UserService{}
 }
 
 func (s *UserService) Get(id int) {
@@ -15,5 +15,5 @@ func (s *UserService) Get(id int) {
 }
 
 func (s *UserService) GetOrder(uid int) {
-	s.order.GetByUser(uid)
+	s.Order.GetByUser(uid)
 }
