@@ -1,22 +1,19 @@
 package service
 
-import (
-	"fmt"
-	"strconv"
-)
+import "fmt"
 
 type UserService struct {
-	Order *OrderService `inject`
+	order *OrderService
 }
 
-func NewUserService() *UserService {
-	return &UserService{}
+func NewUserService(order *OrderService) *UserService {
+	return &UserService{order: order}
 }
 
-func (s *UserService) GetUserInfo(uid int) {
-	fmt.Println("userid is " + strconv.Itoa(uid))
+func (s *UserService) Get(id int) {
+	fmt.Println(id)
 }
 
-func (s *UserService) GetOrderInfo(uid int) {
-	s.Order.GetOrderInfo(uid)
+func (s *UserService) GetOrder(uid int) {
+	s.order.GetByUser(uid)
 }

@@ -2,27 +2,16 @@ package main
 
 import (
 	"fmt"
-	"ioc/config"
-	"ioc/injector"
-	"ioc/service"
+	"github.com/xylong/ioc/injector"
+	"github.com/xylong/ioc/service"
 )
 
 func main() {
-	uid := 123
+	//user := service.NewUserService(service.NewOrderService())
+	//user.Get(1)
+	//user.GetOrder(1)
 
-	//userService := service.NewUserService(service.NewOrderService())
-	//userService.GetUserInfo(uid)
-	//userService.GetOrderInfo(uid)
-	serverConfig := config.NewConfig()
-	injector.BeanFactory.ExprMap = map[string]interface{}{
-		"ServerConfig": serverConfig,
-	}
-
-	injector.BeanFactory.Set(serverConfig)
-
-	userService := service.NewUserService()
-	injector.BeanFactory.Apply(userService)
-	//order := injector.BeanFactory.Get((*service.OrderService)(nil))
-	fmt.Println(userService.Order)
-	userService.Order.GetOrderInfo(uid)
+	injector.Factory.Set(service.NewOrderService())
+	order := injector.Factory.Get((*service.OrderService)(nil))
+	fmt.Println(order)
 }

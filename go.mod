@@ -1,4 +1,4 @@
-module ioc
+module github.com/xylong/ioc
 
 go 1.18
 

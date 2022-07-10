@@ -7,9 +7,9 @@ type OrderService struct {
 }
 
 func NewOrderService() *OrderService {
-	return &OrderService{Version: "1.0.0"}
+	return &OrderService{Version: "1.0.0 "}
 }
 
-func (s *OrderService) GetOrderInfo(uid int) {
-	fmt.Printf("user:%d orders", uid)
+func (s *OrderService) GetByUser(uid int) {
+	fmt.Printf("uid=%d的订单", uid)
 }
