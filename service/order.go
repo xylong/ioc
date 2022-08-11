@@ -2,6 +2,10 @@ package service
 
 import "fmt"
 
+type IOrder interface {
+	GetByUser(int2 int)
+}
+
 type OrderService struct {
 	Version string
 }

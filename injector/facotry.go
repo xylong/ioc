@@ -51,7 +51,8 @@ func (f *MapperFactory) Get(key interface{}) interface{} {
 }
 
 // Apply 处理依赖注入
-// 注入的实体必须是struct的指针，并且被注入的字段需设置inject标签，如`inject:"-"`或`inject:"Service.Order()"`
+// 接受struct的指针，并且注入的字段需设置inject标签，如`inject:"-"`或`inject:"Service.Order()"`
+// -为单例模式，表达式为多例模式
 func (f *MapperFactory) Apply(obj interface{}) {
 	if obj == nil {
 		return
@@ -76,11 +77,13 @@ func (f *MapperFactory) Apply(obj interface{}) {
 				if result := expr.BeanExpr(tag, f.expr); result != nil && !result.IsEmpty() && result[0] != nil {
 					v.Field(i).Set(reflect.ValueOf(result[0]))
 					f.set(result[0])
+					f.Apply(result[0])
 				}
 			} else {
 				// 单例模式
 				if val := f.Get(field.Type); val != nil {
 					v.Field(i).Set(reflect.ValueOf(val))
+					f.Apply(val)
 				}
 			}
 		}
@@ -108,10 +111,10 @@ func (f *MapperFactory) Expr(bean ...interface{}) {
 
 		for i := 0; i < t.NumMethod(); i++ {
 			method := v.Method(i)
-			callRet := method.Call(nil)
+			result := method.Call(nil)
 
-			if callRet != nil && len(callRet) == 1 {
-				f.Set(callRet[0].Interface())
+			if result != nil && len(result) == 1 {
+				f.Set(result[0].Interface())
 			}
 		}
 	}

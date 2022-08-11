@@ -10,6 +10,7 @@ import (
 func main() {
 	// 直接灌入
 	//injector.Factory.Set(service.NewOrderService())
+	//fmt.Println(injector.Factory.Get((*service.OrderService)(nil)))
 	injector.Factory.Expr(config.NewServiceConfig())
 	//injector.Factory.Set(service.NewOrderService())
 

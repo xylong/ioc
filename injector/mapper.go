@@ -26,5 +26,12 @@ func (m mapper) get(key interface{}) reflect.Value {
 		return v
 	}
 
+	// 接口处理
+	for key, value := range m {
+		if key.Implements(t) {
+			return value
+		}
+	}
+
 	return reflect.Value{}
 }
