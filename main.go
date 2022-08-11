@@ -14,14 +14,20 @@ func main() {
 	//fmt.Println(order)
 
 	serviceConfig := config.NewServiceConfig()
-
 	injector.Factory.Expr = map[string]interface{}{
 		"Service": serviceConfig,
 	}
-	injector.Factory.Set(serviceConfig)
+	//injector.Factory.Set(service.NewOrderService())
 
-	user := service.NewUserService()
-	injector.Factory.Apply(user)
+	{
+		user := service.NewUserService()
+		injector.Factory.Apply(user)
+		fmt.Println(user.Order)
+	}
 
-	fmt.Println(user.Order)
+	{
+		admin := service.NewAdminService()
+		injector.Factory.Apply(admin)
+		fmt.Println(admin.Order)
+	}
 }

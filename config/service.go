@@ -1,6 +1,8 @@
 package config
 
-import "github.com/xylong/ioc/service"
+import (
+	"github.com/xylong/ioc/service"
+)
 
 type Service struct {
 }
