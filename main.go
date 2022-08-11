@@ -2,14 +2,23 @@ package main
 
 import (
 	"fmt"
+	"github.com/xylong/ioc/config"
 	"github.com/xylong/ioc/injector"
 	"github.com/xylong/ioc/service"
 )
 
 func main() {
-	injector.Factory.Set(service.NewOrderService())
-	order := injector.Factory.Get((*service.OrderService)(nil))
-	fmt.Println(order)
+	// 直接灌入
+	//injector.Factory.Set(service.NewOrderService())
+	//order := injector.Factory.Get((*service.OrderService)(nil))
+	//fmt.Println(order)
+
+	serviceConfig := config.NewServiceConfig()
+
+	injector.Factory.Expr = map[string]interface{}{
+		"Service": serviceConfig,
+	}
+	injector.Factory.Set(serviceConfig)
 
 	user := service.NewUserService()
 	injector.Factory.Apply(user)

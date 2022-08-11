@@ -1,6 +1,7 @@
 package injector
 
 import (
+	"github.com/shenyisyn/goft-expr/src/expr"
 	"reflect"
 )
 
@@ -16,10 +17,14 @@ var Factory *MapperFactory
 
 type MapperFactory struct {
 	mapper
+	Expr map[string]interface{}
 }
 
 func NewMapperFactory() *MapperFactory {
-	return &MapperFactory{mapper: make(map[reflect.Type]reflect.Value)}
+	return &MapperFactory{
+		mapper: make(map[reflect.Type]reflect.Value),
+		Expr:   make(map[string]interface{}),
+	}
 }
 
 // Set 设置
@@ -45,6 +50,9 @@ func (f *MapperFactory) Get(key interface{}) interface{} {
 }
 
 // Apply 处理依赖注入
+// 注入的实体必须是struct的指针，并且被注入的字段需设置inject标签，如`inject:"-"`或`inject:"Service.Order()"`
+// tag为-时，主动调用Set函数传入实体
+// tag为表达式时，需设置Expr并且Set传入Expr对象的值，且tag的表达式和Expr的键保持一致
 func (f *MapperFactory) Apply(obj interface{}) {
 	if obj == nil {
 		return
@@ -61,9 +69,19 @@ func (f *MapperFactory) Apply(obj interface{}) {
 
 	for i := 0; i < v.NumField(); i++ {
 		field := v.Type().Field(i)
-		if v.Field(i).CanSet() && (field.Tag == injectTag || field.Tag.Get(injectTag) == "" || field.Tag.Get(injectTag) == "-") {
-			if val := f.Get(field.Type); val != nil {
-				v.Field(i).Set(reflect.ValueOf(val))
+		tag := field.Tag.Get(injectTag)
+
+		if v.Field(i).CanSet() && tag != "" {
+			if tag == "" || tag == "-" {
+				// 直接注入
+				if val := f.Get(field.Type); val != nil {
+					v.Field(i).Set(reflect.ValueOf(val))
+				}
+			} else {
+				// 表达式注入
+				if result := expr.BeanExpr(tag, f.Expr); result != nil && !result.IsEmpty() {
+					v.Field(i).Set(reflect.ValueOf(result[0]))
+				}
 			}
 		}
 	}
