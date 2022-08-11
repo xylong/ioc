@@ -10,13 +10,7 @@ import (
 func main() {
 	// 直接灌入
 	//injector.Factory.Set(service.NewOrderService())
-	//order := injector.Factory.Get((*service.OrderService)(nil))
-	//fmt.Println(order)
-
-	serviceConfig := config.NewServiceConfig()
-	injector.Factory.Expr = map[string]interface{}{
-		"Service": serviceConfig,
-	}
+	injector.Factory.Expr(config.NewServiceConfig())
 	//injector.Factory.Set(service.NewOrderService())
 
 	{

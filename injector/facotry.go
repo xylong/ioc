@@ -12,19 +12,19 @@ func init() {
 	Factory = NewMapperFactory()
 }
 
-// Factory 依赖注入工厂
-// 依赖实体可以用Set方法主动传入或者设置Expr传入
+// Factory ioc全局变量
 var Factory *MapperFactory
 
+// MapperFactory ioc容器工厂
 type MapperFactory struct {
 	mapper
-	Expr map[string]interface{}
+	expr map[string]interface{} // 表达式
 }
 
 func NewMapperFactory() *MapperFactory {
 	return &MapperFactory{
 		mapper: make(map[reflect.Type]reflect.Value),
-		Expr:   make(map[string]interface{}),
+		expr:   make(map[string]interface{}),
 	}
 }
 
@@ -71,16 +71,47 @@ func (f *MapperFactory) Apply(obj interface{}) {
 		tag := field.Tag.Get(injectTag)
 
 		if v.Field(i).CanSet() && tag != "" {
-			if val := f.Get(field.Type); val != nil {
-				v.Field(i).Set(reflect.ValueOf(val))
-				continue
-			}
-
-			if tag != "" && tag != "-" {
-				if result := expr.BeanExpr(tag, f.Expr); result != nil && !result.IsEmpty() && result[0] != nil {
+			if tag != "-" {
+				// 多例模式
+				if result := expr.BeanExpr(tag, f.expr); result != nil && !result.IsEmpty() && result[0] != nil {
 					v.Field(i).Set(reflect.ValueOf(result[0]))
 					f.set(result[0])
 				}
+			} else {
+				// 单例模式
+				if val := f.Get(field.Type); val != nil {
+					v.Field(i).Set(reflect.ValueOf(val))
+				}
+			}
+		}
+	}
+}
+
+// Expr 自动构建表达式
+func (f *MapperFactory) Expr(bean ...interface{}) {
+	for _, b := range bean {
+		t := reflect.TypeOf(b)
+
+		if t.Kind() != reflect.Ptr {
+			panic("required ptr object")
+		}
+
+		if t.Elem().Kind() != reflect.Struct {
+			continue
+		}
+
+		f.Set(b)                    // 将自身加入mapper
+		f.expr[t.Elem().Name()] = b // 自动构建expr
+		f.Apply(b)                  // 处理依赖注入(new)
+
+		v := reflect.ValueOf(b)
+
+		for i := 0; i < t.NumMethod(); i++ {
+			method := v.Method(i)
+			callRet := method.Call(nil)
+
+			if callRet != nil && len(callRet) == 1 {
+				f.Set(callRet[0].Interface())
 			}
 		}
 	}
