@@ -7,6 +7,7 @@ type IOrder interface {
 }
 
 type OrderService struct {
+	DB      *DBService `inject:"-"`
 	Version string
 }
 

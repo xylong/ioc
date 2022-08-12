@@ -11,13 +11,13 @@ func main() {
 	// 直接灌入
 	//injector.Factory.Set(service.NewOrderService())
 	//fmt.Println(injector.Factory.Get((*service.OrderService)(nil)))
-	injector.Factory.Expr(config.NewServiceConfig())
+	injector.Factory.Load(config.NewServiceConfig())
 	//injector.Factory.Set(service.NewOrderService())
 
 	{
 		user := service.NewUserService()
 		injector.Factory.Apply(user)
-		fmt.Println(user.Order)
+		fmt.Println(user.Order.DB)
 	}
 
 	{

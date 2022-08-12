@@ -90,8 +90,8 @@ func (f *MapperFactory) Apply(obj interface{}) {
 	}
 }
 
-// Expr 自动构建表达式
-func (f *MapperFactory) Expr(bean ...interface{}) {
+// Load 加载注入实体，并自动构建表达式
+func (f *MapperFactory) Load(bean ...interface{}) {
 	for _, b := range bean {
 		t := reflect.TypeOf(b)
 

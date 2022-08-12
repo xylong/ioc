@@ -1,7 +1,6 @@
 package config
 
 import (
-	"fmt"
 	"github.com/xylong/ioc/service"
 )
 
@@ -13,6 +12,9 @@ func NewServiceConfig() *Service {
 }
 
 func (s *Service) Order() *service.OrderService {
-	fmt.Println("a")
 	return service.NewOrderService()
+}
+
+func (s *Service) DB() *service.DBService {
+	return service.NewDBService()
 }
