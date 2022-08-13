@@ -1,4 +1,4 @@
-package injector
+package ioc
 
 import (
 	"github.com/shenyisyn/goft-expr/src/expr"
@@ -76,7 +76,6 @@ func (f *MapperFactory) Apply(obj interface{}) {
 				// 多例模式
 				if result := expr.BeanExpr(tag, f.expr); result != nil && !result.IsEmpty() && result[0] != nil {
 					v.Field(i).Set(reflect.ValueOf(result[0]))
-					f.set(result[0])
 					f.Apply(result[0])
 				}
 			} else {
@@ -90,8 +89,8 @@ func (f *MapperFactory) Apply(obj interface{}) {
 	}
 }
 
-// Load 加载注入实体，并自动构建表达式
-func (f *MapperFactory) Load(bean ...interface{}) {
+// Unwrap 加载注入实体，并自动构建表达式
+func (f *MapperFactory) Unwrap(bean ...interface{}) {
 	for _, b := range bean {
 		t := reflect.TypeOf(b)
 

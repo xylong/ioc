@@ -1,13 +1,13 @@
 package config
 
 import (
-	"github.com/xylong/ioc/service"
+	"github.com/xylong/ioc/test/internal/service"
 )
 
 type Service struct {
 }
 
-func NewServiceConfig() *Service {
+func NewService() *Service {
 	return &Service{}
 }
 

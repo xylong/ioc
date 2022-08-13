@@ -1,6 +1,8 @@
-package injector
+package ioc
 
-import "reflect"
+import (
+	"reflect"
+)
 
 type mapper map[reflect.Type]reflect.Value
 
@@ -27,9 +29,9 @@ func (m mapper) get(key interface{}) reflect.Value {
 	}
 
 	// 接口处理
-	for key, value := range m {
-		if key.Implements(t) {
-			return value
+	for k, v := range m {
+		if t.Kind() == reflect.Interface && k.Implements(t) {
+			return v
 		}
 	}
 

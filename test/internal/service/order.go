@@ -3,7 +3,7 @@ package service
 import "fmt"
 
 type IOrder interface {
-	GetByUser(int2 int)
+	GetByUser(int)
 }
 
 type OrderService struct {
@@ -12,6 +12,7 @@ type OrderService struct {
 }
 
 func NewOrderService() *OrderService {
+	fmt.Println("a")
 	return &OrderService{Version: "1.0.0 "}
 }
 
